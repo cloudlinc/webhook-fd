@@ -57,7 +57,7 @@ app.post('/webhook', async (req, res) => {
         if (error.response) {
             console.error('Error response status:', error.response.status);
             console.error('Error response data:', JSON.stringify(error.response.data, null, 2));
-            res.status(500).send(`Failed to create ticket: ${error.response.data.message}`);
+            res.status(500).send(`Failed to create ticket: ${JSON.stringify(error.response.data, null, 2)}`);
         } else {
             console.error('Error details:', error);
             res.status(500).send('Failed to create ticket');
