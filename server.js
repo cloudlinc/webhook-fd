@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const fs = require('fs');
 const https = require('https');
-const http = require('http');
+const http = require('http'); // Add this line
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -56,7 +56,7 @@ app.post('/webhook', async (req, res) => {
             Student Grade: ${studentGrade}
             Callback Info: ${callbackInfo}
         `,
-        subject: 'New ticket from Synthflow webhook',
+        subject: 'Voice Support',
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
         status: 2,
