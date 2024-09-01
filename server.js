@@ -61,10 +61,10 @@ app.post('/webhook', async (req, res) => {
         priority: 1,
         status: 2,
         custom_fields: {
-            cf_student_name: studentName,
-            cf_student_dob: studentDOB,
-            cf_student_grade: studentGrade,
-            cf_callback_info: callbackInfo
+            _student_name: studentName,
+            _student_dob: studentDOB,
+            _student_grade: studentGrade,
+            _callback_info: callbackInfo
         }
     };
 
