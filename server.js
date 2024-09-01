@@ -23,6 +23,7 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 app.post('/webhook', async (req, res) => {
+    console.log('Received a request at /webhook');
     const data = req.body;
 
     // Log the received data
@@ -38,6 +39,7 @@ app.post('/webhook', async (req, res) => {
     };
 
     try {
+        console.log('Sending data to Freshdesk...');
         // Send data to Freshdesk
         const response = await axios.post(`https://${process.env.FRESHDESK_DOMAIN}.freshdesk.com/api/v2/tickets`, ticketData, {
             headers: {
@@ -59,4 +61,10 @@ const httpServer = http.createServer(app);
 
 httpServer.listen(PORT, () => {
     console.log(`HTTP Server is running on port ${PORT}`);
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).send('Internal Server Error');
 });
