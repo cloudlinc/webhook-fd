@@ -27,11 +27,11 @@ app.post('/webhook', async (req, res) => {
     const data = req.body;
 
     // Log the received data
-    console.log('Received data from Synthflow:', data);
+    console.log('Received data from Synthflow:', JSON.stringify(data, null, 2));
 
     // Prepare Freshdesk ticket data
     const ticketData = {
-        description: JSON.stringify(data),
+        description: JSON.stringify(data, null, 2),
         subject: 'New ticket from Synthflow webhook',
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
@@ -40,6 +40,8 @@ app.post('/webhook', async (req, res) => {
 
     try {
         console.log('Sending data to Freshdesk...');
+        console.log('Ticket data:', JSON.stringify(ticketData, null, 2));
+
         // Send data to Freshdesk
         const response = await axios.post(`https://${process.env.FRESHDESK_DOMAIN}.freshdesk.com/api/v2/tickets`, ticketData, {
             headers: {
@@ -48,11 +50,18 @@ app.post('/webhook', async (req, res) => {
             }
         });
 
-        console.log('Ticket created in Freshdesk:', response.data);
+        console.log('Ticket created in Freshdesk:', JSON.stringify(response.data, null, 2));
         res.status(200).send('Ticket created successfully');
     } catch (error) {
-        console.error('Error creating ticket in Freshdesk:', error.response ? error.response.data : error.message);
-        res.status(500).send('Failed to create ticket');
+        console.error('Error creating ticket in Freshdesk:', error.message);
+        if (error.response) {
+            console.error('Error response status:', error.response.status);
+            console.error('Error response data:', JSON.stringify(error.response.data, null, 2));
+            res.status(500).send(`Failed to create ticket: ${error.response.data.message}`);
+        } else {
+            console.error('Error details:', error);
+            res.status(500).send('Failed to create ticket');
+        }
     }
 });
 
@@ -67,4 +76,9 @@ httpServer.listen(PORT, () => {
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
     res.status(500).send('Internal Server Error');
+});
+
+// Add a simple GET endpoint for testing
+app.get('/test', (req, res) => {
+    res.send('Server is running');
 });
