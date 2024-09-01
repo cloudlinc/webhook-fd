@@ -8,16 +8,16 @@ require('dotenv').config(); // Load environment variables
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Load SSL certificates
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/chain.pem', 'utf8');
+// Comment out the SSL certificate loading
+// const privateKey = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/privkey.pem', 'utf8');
+// const certificate = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/cert.pem', 'utf8');
+// const ca = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/chain.pem', 'utf8');
 
-const credentials = {
-    key: privateKey,
-    cert: certificate,
-    ca: ca
-};
+// const credentials = {
+//     key: privateKey,
+//     cert: certificate,
+//     ca: ca
+// };
 
 app.use(bodyParser.json());
 
@@ -53,9 +53,9 @@ app.post('/webhook', async (req, res) => {
     }
 });
 
-// Create HTTPS server
-const httpsServer = https.createServer(credentials, app);
+// Create HTTP server instead of HTTPS
+const httpServer = http.createServer(app);
 
-httpsServer.listen(PORT, () => {
-    console.log(`HTTPS Server is running on port ${PORT}`);
+httpServer.listen(PORT, () => {
+    console.log(`HTTP Server is running on port ${PORT}`);
 });
