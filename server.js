@@ -56,6 +56,7 @@ app.post('/webhook', async (req, res) => {
         console.error('Error creating ticket in Freshdesk:', error.message);
         if (error.response) {
             console.error('Error response status:', error.response.status);
+            console.error('Error response headers:', JSON.stringify(error.response.headers, null, 2));
             console.error('Error response data:', JSON.stringify(error.response.data, null, 2));
             res.status(500).send(`Failed to create ticket: ${JSON.stringify(error.response.data, null, 2)}`);
         } else {
