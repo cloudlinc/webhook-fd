@@ -36,6 +36,11 @@ app.post('/webhook', async (req, res) => {
         const studentGrade = parseInt(data.executed_actions._student_grade?.return_value?.student_grade) || 'N/A';
         const callbackInfo = data.executed_actions._callback_info?.return_value?.callback_info || 'N/A';
 
+        // Validate custom fields
+        if (isNaN(studentGrade)) {
+            throw new Error('Invalid student grade: must be an integer');
+        }
+
         // Prepare Freshdesk ticket data
         const ticketData = {
             description: `
@@ -62,10 +67,10 @@ app.post('/webhook', async (req, res) => {
             priority: 1,
             status: 2,
             custom_fields: {
-                _student_name: studentName,
-                _student_dob: studentDOB,
-                _student_grade: studentGrade,
-                _callback_info: callbackInfo
+                cf_student_name: studentName,
+                cf_student_dob: studentDOB,
+                cf_student_grade: studentGrade,
+                cf_callback_info: callbackInfo
             }
         };
 
