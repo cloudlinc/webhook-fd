@@ -32,8 +32,13 @@ app.post('/webhook', async (req, res) => {
     // Extract specific fields from the webhook data
     const studentName = data.executed_actions?._student_name_student_name_student_name?.return_value?.student_name || 'N/A';
     const studentDOB = data.executed_actions?._student_dob?.return_value?.student_dob || 'N/A';
-    const studentGrade = parseInt(data.executed_actions?._student_grade?.return_value?.student_grade, 10) || 'N/A';
+    
+    // Add debugging logs
+    const rawStudentGrade = data.executed_actions?._student_grade?.return_value?.student_grade;
+    console.log('Raw student grade:', rawStudentGrade);
+    const studentGrade = isNaN(parseInt(rawStudentGrade, 10)) ? 'N/A' : parseInt(rawStudentGrade, 10);
     const callbackInfo = data.executed_actions?._callback_info?.return_value?.callback_info || 'N/A';
+    console.log('Parsed student grade:', studentGrade);
 
     // Prepare Freshdesk ticket data
     const ticketData = {
