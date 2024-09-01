@@ -29,46 +29,46 @@ app.post('/webhook', async (req, res) => {
     // Log the received data
     console.log('Received data from Synthflow:', JSON.stringify(data, null, 2));
 
-    // Extract specific fields from the webhook data
-    const studentName = data.executed_actions._student_name_student_name_student_name?.return_value?.student_name || 'N/A';
-    const studentDOB = data.executed_actions._student_dob?.return_value?.student_dob || 'N/A';
-    const studentGrade = parseInt(data.executed_actions._student_grade?.return_value?.student_grade) || 'N/A';
-    const callbackInfo = data.executed_actions._callback_info?.return_value?.callback_info || 'N/A';
-
-    // Prepare Freshdesk ticket data
-    const ticketData = {
-        description: `
-            Status: ${data.status}
-            Error Message: ${data.error_message || 'N/A'}
-            Lead Name: ${data.lead.name || 'N/A'}
-            Lead Phone Number: ${data.lead.phone_number || 'N/A'}
-            Call Status: ${data.call.status}
-            End Call Reason: ${data.call.end_call_reason}
-            Model ID: ${data.call.model_id}
-            Timezone: ${data.call.timezone}
-            Call ID: ${data.call.call_id}
-            Duration: ${data.call.duration}
-            Start Time: ${data.call.start_time}
-            Transcript: ${data.call.transcript}
-            Recording URL: ${data.call.recording_url}
-            Student Name: ${studentName}
-            Student DOB: ${studentDOB}
-            Student Grade: ${studentGrade}
-            Callback Info: ${callbackInfo}
-        `,
-        subject: 'New ticket from Synthflow webhook',
-        email: 'voice@rocs.org', // Replace with actual customer email
-        priority: 1,
-        status: 2,
-        custom_fields: {
-            _student_name: studentName,
-            _student_dob: studentDOB,
-            _student_grade: studentGrade,
-            _callback_info: callbackInfo
-        }
-    };
-
     try {
+        // Extract specific fields from the webhook data
+        const studentName = data.executed_actions._student_name_student_name_student_name?.return_value?.student_name || 'N/A';
+        const studentDOB = data.executed_actions._student_dob?.return_value?.student_dob || 'N/A';
+        const studentGrade = parseInt(data.executed_actions._student_grade?.return_value?.student_grade) || 'N/A';
+        const callbackInfo = data.executed_actions._callback_info?.return_value?.callback_info || 'N/A';
+
+        // Prepare Freshdesk ticket data
+        const ticketData = {
+            description: `
+                Status: ${data.status}
+                Error Message: ${data.error_message || 'N/A'}
+                Lead Name: ${data.lead.name || 'N/A'}
+                Lead Phone Number: ${data.lead.phone_number || 'N/A'}
+                Call Status: ${data.call.status}
+                End Call Reason: ${data.call.end_call_reason}
+                Model ID: ${data.call.model_id}
+                Timezone: ${data.call.timezone}
+                Call ID: ${data.call.call_id}
+                Duration: ${data.call.duration}
+                Start Time: ${data.call.start_time}
+                Transcript: ${data.call.transcript}
+                Recording URL: ${data.call.recording_url}
+                Student Name: ${studentName}
+                Student DOB: ${studentDOB}
+                Student Grade: ${studentGrade}
+                Callback Info: ${callbackInfo}
+            `,
+            subject: 'New ticket from Synthflow webhook',
+            email: 'voice@rocs.org', // Replace with actual customer email
+            priority: 1,
+            status: 2,
+            custom_fields: {
+                _student_name: studentName,
+                _student_dob: studentDOB,
+                _student_grade: studentGrade,
+                _callback_info: callbackInfo
+            }
+        };
+
         console.log('Sending data to Freshdesk...');
         console.log('Ticket data:', JSON.stringify(ticketData, null, 2));
 
