@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const fs = require('fs');
 const https = require('https');
-const http = require('http');
+const http = require('http'); // Add this line
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -32,7 +32,7 @@ app.post('/webhook', async (req, res) => {
     // Extract specific fields from the webhook data
     const studentName = data.executed_actions?._student_name_student_name_student_name?.return_value?.student_name || 'N/A';
     const studentDOB = data.executed_actions?._student_dob?.return_value?.student_dob || 'N/A';
-    const studentGrade = data.executed_actions?._student_grade?.return_value?.student_grade || 'N/A';
+    const studentGrade = parseInt(data.executed_actions?._student_grade?.return_value?.student_grade, 10) || 'N/A';
     const callbackInfo = data.executed_actions?._callback_info?.return_value?.callback_info || 'N/A';
 
     // Prepare Freshdesk ticket data
@@ -59,18 +59,14 @@ app.post('/webhook', async (req, res) => {
         subject: 'Voice Support',
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
-        status: 2
+        status: 2,
+        custom_fields: {
+            cf_student_name: studentName,
+            cf_student_dob: studentDOB,
+            cf_student_grade: studentGrade,
+            cf_callback_info: callbackInfo
+        }
     };
-
-    // Add custom fields only if they are valid
-    // if (studentName !== 'N/A' || studentDOB !== 'N/A' || studentGrade !== 'N/A' || callbackInfo !== 'N/A') {
-    //     ticketData.custom_fields = {
-    //         cf_student_name: studentName,
-    //         cf_student_dob: studentDOB,
-    //         cf_student_grade: studentGrade,
-    //         cf_callback_info: callbackInfo
-    //     };
-    // }
 
     try {
         console.log('Sending data to Freshdesk...');
@@ -88,19 +84,12 @@ app.post('/webhook', async (req, res) => {
         res.status(200).send('Ticket created successfully');
     } catch (error) {
         console.error('Error creating ticket in Freshdesk:', error.message);
-
         if (error.response) {
-            // Log the entire error response
             console.error('Error response status:', error.response.status);
             console.error('Error response headers:', JSON.stringify(error.response.headers, null, 2));
             console.error('Error response data:', JSON.stringify(error.response.data, null, 2));
             res.status(500).send(`Failed to create ticket: ${JSON.stringify(error.response.data, null, 2)}`);
-        } else if (error.request) {
-            // Request was made but no response was received
-            console.error('Error request data:', JSON.stringify(error.request, null, 2));
-            res.status(500).send('No response received from Freshdesk');
         } else {
-            // Something else happened while setting up the request
             console.error('Error details:', error);
             res.status(500).send('Failed to create ticket');
         }
