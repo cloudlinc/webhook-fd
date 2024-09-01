@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const fs = require('fs');
 const https = require('https');
-const http = require('http'); // Add this line
+const http = require('http');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -88,12 +88,19 @@ app.post('/webhook', async (req, res) => {
         res.status(200).send('Ticket created successfully');
     } catch (error) {
         console.error('Error creating ticket in Freshdesk:', error.message);
+
         if (error.response) {
+            // Log the entire error response
             console.error('Error response status:', error.response.status);
             console.error('Error response headers:', JSON.stringify(error.response.headers, null, 2));
             console.error('Error response data:', JSON.stringify(error.response.data, null, 2));
             res.status(500).send(`Failed to create ticket: ${JSON.stringify(error.response.data, null, 2)}`);
+        } else if (error.request) {
+            // Request was made but no response was received
+            console.error('Error request data:', JSON.stringify(error.request, null, 2));
+            res.status(500).send('No response received from Freshdesk');
         } else {
+            // Something else happened while setting up the request
             console.error('Error details:', error);
             res.status(500).send('Failed to create ticket');
         }
