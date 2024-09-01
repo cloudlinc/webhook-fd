@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const fs = require('fs');
 const https = require('https');
-const http = require('http'); // Add this line
+const http = require('http');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -60,12 +60,12 @@ app.post('/webhook', async (req, res) => {
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
         status: 2,
-        // custom_fields: {
-        //     cf_student_name: studentName,
-        //     cf_student_dob: studentDOB,
-        //     cf_student_grade: studentGrade,
-        //     cf_callback_info: callbackInfo
-        // }
+        custom_fields: {
+            cf_student_name: studentName,
+            cf_student_dob: studentDOB,
+            cf_student_grade: studentGrade,
+            cf_callback_info: callbackInfo
+        }
     };
 
     try {
