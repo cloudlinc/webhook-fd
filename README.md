@@ -6,6 +6,7 @@ Instructions for running the server and updating the repo.
 
 1. Access the VM via Lightsail SSH
 2. cd webhook-fd
+    - If webhook-fd does not exist, run mkdir webhook-fd
 3. git pull origin main
 4. pm2 restart server
 5. pm2 save
