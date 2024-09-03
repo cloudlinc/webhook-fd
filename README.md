@@ -18,6 +18,9 @@ Instructions for running the server and updating the repo.
 ## Troubleshooting
 
 - If ngrok gives an error, go to the ngrok dashboard and click "restart" on the old tunnel.
+- if you have a conflict with pull requests, you can 
+    - run git checkout -- package.json
+    - run git pull origin main
 
 1. If you get an error about ngrok not being installed, run `npm install -g ngrok`
 2. If you get an error about pm2 not being installed, run `npm install -g pm2`
