@@ -3,22 +3,11 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const fs = require('fs');
 const https = require('https');
-const http = require('http'); // Add this line
-require('dotenv').config(); // Load environment variables
+const http = require('http');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Comment out the SSL certificate loading
-// const privateKey = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/privkey.pem', 'utf8');
-// const certificate = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/cert.pem', 'utf8');
-// const ca = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/chain.pem', 'utf8');
-
-// const credentials = {
-//     key: privateKey,
-//     cert: certificate,
-//     ca: ca
-// };
 
 app.use(bodyParser.json());
 
@@ -29,11 +18,32 @@ app.post('/webhook', async (req, res) => {
     // Log the received data
     console.log('Received data from Synthflow:', JSON.stringify(data, null, 2));
 
+    // Extract key information from the received data
+    const studentName = data['Student Name'] || 'Unknown';
+    const studentDOB = data['Student DOB'] || 'Unknown';
+    const studentGrade = data['Student Grade'] || 'Unknown';
+    const callbackInfo = data['Callback Info'] || 'Not provided';
+    const transcript = data['Transcript'] || 'No transcript available';
+
+    // Prepare a more detailed description for the Freshdesk ticket
+    const description = `
+    **Student Name:** ${studentName}
+    **Date of Birth:** ${studentDOB}
+    **Grade:** ${studentGrade}
+    **Callback Info:** ${callbackInfo}
+
+    **Transcript:**
+    ${transcript}
+
+    **Raw Data:**
+    ${JSON.stringify(data, null, 2)}
+    `;
+
     // Prepare Freshdesk ticket data
     const ticketData = {
-        description: JSON.stringify(data, null, 2),
+        description: description,
         subject: 'Voice Support',
-        email: 'voice@rocs.org', // Replace with actual customer email
+        email: 'voice@rocs.org', // Replace with actual customer email if available in the webhook
         priority: 1,
         status: 2
     };
