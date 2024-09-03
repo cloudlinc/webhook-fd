@@ -32,7 +32,7 @@ app.post('/webhook', async (req, res) => {
     // Prepare Freshdesk ticket data
     const ticketData = {
         description: JSON.stringify(data, null, 2),
-        subject: 'New ticket from Synthflow webhook',
+        subject: 'Voice Support',
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
         status: 2
