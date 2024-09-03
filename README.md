@@ -13,3 +13,16 @@ Instructions for running the server and updating the repo.
 7. ngrok http 3000
 8. ctrl-a d
 9. exit
+
+## Troubleshooting
+
+- If ngrok gives an error, go to the ngrok dashboard and click "restart" on the old tunnel.
+
+1. If you get an error about ngrok not being installed, run `npm install -g ngrok`
+2. If you get an error about pm2 not being installed, run `npm install -g pm2`
+3. If you get an error about screen not being installed, run `sudo apt-get install screen`
+4. If you get an error about node not being installed, run `sudo apt-get install nodejs`
+5. If you get an error about npm not being installed, run `sudo apt-get install npm`
+6. If you get an error about git not being installed, run `sudo apt-get install git`
+7. If you get an error about ssh not being installed, run `sudo apt-get install ssh`
+8. If you get an error about curl not being installed, run `sudo apt-get install curl`
