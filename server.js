@@ -29,14 +29,10 @@ app.post('/webhook', async (req, res) => {
 **Issue Description:**
 ${issueDescription}
 
-**Student Name:**
-${studentName}
-
-**Date of Birth:**
-${studentDOB}
-
-**Grade:**
-${studentGrade}
+**Student Information:**
+• Name: ${studentName}
+• Date of Birth: ${studentDOB}
+• Grade: ${studentGrade}
 
 **Call Transcript:**
 ${callTranscript}
