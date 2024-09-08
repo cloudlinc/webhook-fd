@@ -1,24 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const fs = require('fs');
-const https = require('https');
-const http = require('http');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Comment out the SSL certificate loading
-// const privateKey = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/privkey.pem', 'utf8');
-// const certificate = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/cert.pem', 'utf8');
-// const ca = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/chain.pem', 'utf8');
-
-// const credentials = {
-//     key: privateKey,
-//     cert: certificate,
-//     ca: ca
-// };
 
 app.use(bodyParser.json());
 
@@ -29,48 +15,42 @@ app.post('/webhook', async (req, res) => {
     // Log the received data
     console.log('Received data from Synthflow:', JSON.stringify(data, null, 2));
 
-    // Extract specific fields from the webhook data
-    const studentName = data.executed_actions?._student_name_student_name_student_name?.return_value?.student_name || 'N/A';
-    const studentDOB = data.executed_actions?._student_dob?.return_value?.student_dob || 'N/A';
-    const studentGrade = data.executed_actions?._student_grade?.return_value?.student_grade || 'N/A';
-    const callbackInfo = data.executed_actions?._callback_info?.return_value?.callback_info || 'N/A';
+    // Extract key information from the webhook data
+    const studentName = data.executed_actions._student_name_student_name_student_name?.return_value?.student_name || "Unknown Student";
+    const studentDOB = data.executed_actions._student_dob?.return_value?.student_dob || "Unknown DOB";
+    const studentGrade = data.executed_actions._student_grade?.return_value?.student_grade || "Unknown Grade";
+    const callTranscript = data.call?.transcript || "No transcript available";
+    const issueDescription = data.executed_actions.my_extract_info_issue_description_issue_description?.return_value?.issue_description || "No issue description provided";
+    const callbackInfo = data.executed_actions._callback_info?.return_value?.callback_info || "No callback info provided";
 
-    // Prepare Freshdesk ticket data
+    // Prepare Freshdesk ticket data with the extracted information
     const ticketData = {
         description: `
-            Status: ${data.status}
-            Error Message: ${data.error_message || 'N/A'}
-            Lead Name: ${data.lead?.name || 'N/A'}
-            Lead Phone Number: ${data.lead?.phone_number || 'N/A'}
-            Call Status: ${data.call?.status}
-            End Call Reason: ${data.call?.end_call_reason}
-            Model ID: ${data.call?.model_id}
-            Timezone: ${data.call?.timezone}
-            Call ID: ${data.call?.call_id}
-            Duration: ${data.call?.duration}
-            Start Time: ${data.call?.start_time}
-            Transcript: ${data.call?.transcript}
-            Recording URL: ${data.call?.recording_url}
-            Student Name: ${studentName}
-            Student DOB: ${studentDOB}
-            Student Grade: ${studentGrade}
-            Callback Info: ${callbackInfo}
-        `,
-        subject: 'Voice Support',
+<h3>Issue Description:</h3>
+<p>${issueDescription}</p>
+
+<h3>Student Information:</h3>
+<ul>
+  <li><strong>Name:</strong> ${studentName}</li>
+  <li><strong>Date of Birth:</strong> ${studentDOB}</li>
+  <li><strong>Grade:</strong> ${studentGrade}</li>
+</ul>
+
+<h3>Call Transcript:</h3>
+<pre>${callTranscript}</pre>
+
+<h3>Callback Info:</h3>
+<p>${callbackInfo}</p>`,
+        subject: `Voice Support for ${studentName}`,
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
-        status: 2
+        status: 2,
+        custom_fields: {
+            "cf_student_name": studentName,
+            "cf_student_grade": parseInt(studentGrade, 10),  // Assuming grade is a number
+            "cf_callback_info": callbackInfo
+        }
     };
-
-    // Add custom fields only if they are valid
-    if (studentName !== 'N/A' || studentDOB !== 'N/A' || studentGrade !== 'N/A' || callbackInfo !== 'N/A') {
-        ticketData.custom_fields = {
-            cf_student_name: studentName,
-            cf_student_grade: studentGrade,
-            cf_student_dob: studentDOB,
-            cf_callback_info: callbackInfo
-        };
-    }
 
     try {
         console.log('Sending data to Freshdesk...');
@@ -87,28 +67,18 @@ app.post('/webhook', async (req, res) => {
         console.log('Ticket created in Freshdesk:', JSON.stringify(response.data, null, 2));
         res.status(200).send('Ticket created successfully');
     } catch (error) {
-        console.error('Error creating ticket in Freshdesk:', error.message);
-
+        console.error('Error in webhook handler:', error);
         if (error.response) {
-            // Log the entire error response
             console.error('Error response status:', error.response.status);
             console.error('Error response headers:', JSON.stringify(error.response.headers, null, 2));
             console.error('Error response data:', JSON.stringify(error.response.data, null, 2));
-            res.status(500).send(`Failed to create ticket: ${JSON.stringify(error.response.data, null, 2)}`);
-        } else if (error.request) {
-            // Request was made but no response was received
-            console.error('Error request data:', JSON.stringify(error.request, null, 2));
-            res.status(500).send('No response received from Freshdesk');
-        } else {
-            // Something else happened while setting up the request
-            console.error('Error details:', error);
-            res.status(500).send('Failed to create ticket');
         }
+        res.status(500).send(`Internal Server Error: ${error.message}`);
     }
 });
 
 // Create HTTP server instead of HTTPS
-const httpServer = http.createServer(app);
+const httpServer = require('http').createServer(app);
 
 httpServer.listen(PORT, () => {
     console.log(`HTTP Server is running on port ${PORT}`);
