@@ -46,8 +46,8 @@ app.post('/webhook', async (req, res) => {
         priority: 1,
         status: 2,
         custom_fields: {
-            "cf_student_name": String(studentName),
-            "cf_student_grade": String(studentGrade)
+            "cf_student_name": studentName,
+            "cf_student_grade": parseInt(studentGrade, 10)  // Assuming grade is a number
         }
     };
 
