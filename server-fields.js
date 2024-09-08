@@ -66,8 +66,8 @@ app.post('/webhook', async (req, res) => {
     if (studentName !== 'N/A' || studentDOB !== 'N/A' || studentGrade !== 'N/A' || callbackInfo !== 'N/A') {
         ticketData.custom_fields = {
             cf_student_name: studentName,
-            cf_student_dob: studentDOB,
             cf_student_grade: studentGrade,
+            cf_student_dob: studentDOB,
             cf_callback_info: callbackInfo
         };
     }

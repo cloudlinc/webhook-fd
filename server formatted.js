@@ -44,11 +44,7 @@ app.post('/webhook', async (req, res) => {
         subject: `Voice Support for ${studentName}`,
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
-        status: 2,
-        custom_fields: {
-            cf_student_name: studentName,
-            cf_student_grade: studentGrade
-        }
+        status: 2
     };
 
     try {
