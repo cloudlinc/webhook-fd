@@ -24,7 +24,7 @@ app.post('/webhook', async (req, res) => {
     const callbackInfo = data.executed_actions._callback_info?.return_value?.callback_info || "No callback info provided";
 
     // Prepare Freshdesk ticket data with the extracted information
-  `  const ticketData = {
+    const ticketData = {
         description: `
         **Issue Description:** ${issueDescription}
         **Student Name:** ${studentName}
@@ -32,7 +32,7 @@ app.post('/webhook', async (req, res) => {
         **Grade:** ${studentGrade}
         **Call Transcript:** 
         ${callTranscript}
-        **Callback Info:** ${callbackInfo}`,`
+        **Callback Info:** ${callbackInfo}`,
         subject: `Voice Support for ${studentName}`,
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
