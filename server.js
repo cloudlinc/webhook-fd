@@ -26,13 +26,23 @@ app.post('/webhook', async (req, res) => {
     // Prepare Freshdesk ticket data with the extracted information
     const ticketData = {
         description: `
-        **Issue Description:** ${issueDescription}
-        **Student Name:** ${studentName}
-        **Date of Birth:** ${studentDOB}
-        **Grade:** ${studentGrade}
-        **Call Transcript:** 
-        ${callTranscript}
-        **Callback Info:** ${callbackInfo}`,
+**Issue Description:**
+${issueDescription}
+
+**Student Name:**
+${studentName}
+
+**Date of Birth:**
+${studentDOB}
+
+**Grade:**
+${studentGrade}
+
+**Call Transcript:**
+${callTranscript}
+
+**Callback Info:**
+${callbackInfo}`,
         subject: `Voice Support for ${studentName}`,
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
