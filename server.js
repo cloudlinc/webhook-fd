@@ -36,11 +36,11 @@ app.post('/webhook', async (req, res) => {
   <li><strong>Grade:</strong> ${studentGrade}</li>
 </ul>
 
-<h3>Call Transcript:</h3>
-<pre>${callTranscript}</pre>
-
 <h3>Callback Info:</h3>
-<p>${callbackInfo}</p>`,
+<p>${callbackInfo}</p>
+
+<h3>Call Transcript:</h3>
+<pre>${callTranscript}</pre>`,
         subject: `Voice Support for ${studentName}`,
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
