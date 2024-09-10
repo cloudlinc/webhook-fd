@@ -36,15 +36,20 @@ app.post('/webhook', async (req, res) => {
   <li><strong>Grade:</strong> ${studentGrade}</li>
 </ul>
 
-<h3>Call Transcript:</h3>
-<pre>${callTranscript}</pre>
-
 <h3>Callback Info:</h3>
-<p>${callbackInfo}</p>`,
+<p>${callbackInfo}</p>
+
+<h3>Call Transcript:</h3>
+<pre>${callTranscript}</pre>`,
         subject: `Voice Support for ${studentName}`,
         email: 'voice@rocs.org', // Replace with actual customer email
         priority: 1,
-        status: 2
+        status: 2,
+        custom_fields: {
+            "cf_student_name": studentName,
+            "cf_student_grade": parseInt(studentGrade, 10),  // Assuming grade is a number
+            "cf_callback_info": callbackInfo
+        }
     };
 
     try {
@@ -62,16 +67,13 @@ app.post('/webhook', async (req, res) => {
         console.log('Ticket created in Freshdesk:', JSON.stringify(response.data, null, 2));
         res.status(200).send('Ticket created successfully');
     } catch (error) {
-        console.error('Error creating ticket in Freshdesk:', error.message);
+        console.error('Error in webhook handler:', error);
         if (error.response) {
             console.error('Error response status:', error.response.status);
             console.error('Error response headers:', JSON.stringify(error.response.headers, null, 2));
             console.error('Error response data:', JSON.stringify(error.response.data, null, 2));
-            res.status(500).send(`Failed to create ticket: ${JSON.stringify(error.response.data, null, 2)}`);
-        } else {
-            console.error('Error details:', error);
-            res.status(500).send('Failed to create ticket');
         }
+        res.status(500).send(`Internal Server Error: ${error.message}`);
     }
 });
 
